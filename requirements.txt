@@ -1,0 +1,2 @@
+# No dependencies required. The script uses only the Python standard library.
+# Python 3.7+ recommended.
