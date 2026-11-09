@@ -2,7 +2,8 @@
 """Schema Markup Generator.
 
 A simple Python CLI that builds copy-paste ready JSON-LD schema markup
-for common page types: LocalBusiness, FAQPage, Product and BreadcrumbList.
+for common page types: LocalBusiness, FAQPage, Product, BreadcrumbList
+and Article (Article, BlogPosting, NewsArticle).
 
 Only the Python standard library is used, so no dependencies are needed.
 """
@@ -99,6 +100,25 @@ def build_product(args):
         "offers": offer,
     }
     return {k: v for k, v in product.items() if v}
+
+
+def build_article(args):
+    """Build Article/BlogPosting/NewsArticle JSON-LD."""
+    article = {
+        "@context": "https://schema.org",
+        "@type": args.article_type,
+        "headline": args.headline,
+        "description": args.description,
+        "author": {"@type": "Person", "name": args.author} if args.author else None,
+        "datePublished": args.date_published,
+        "dateModified": args.date_modified,
+        "image": args.image,
+        "url": args.url,
+        "publisher": (
+            {"@type": "Organization", "name": args.publisher} if args.publisher else None
+        ),
+    }
+    return {k: v for k, v in article.items() if v}
 
 
 def build_breadcrumbs(args):
@@ -200,6 +220,23 @@ def parse_args(argv=None):
         help="One breadcrumb; repeatable, in page order.",
     )
 
+    art = sub.add_parser("article", parents=[script_parent], help="Generate Article schema.")
+    art.add_argument(
+        "--type",
+        dest="article_type",
+        default="Article",
+        choices=["Article", "BlogPosting", "NewsArticle"],
+        help="Schema type (default Article).",
+    )
+    art.add_argument("--headline", required=True, help="Article headline.")
+    art.add_argument("--description", help="Short article description.")
+    art.add_argument("--author", help="Author name.")
+    art.add_argument("--date-published", help="Publish date, e.g. 2026-11-09.")
+    art.add_argument("--date-modified", help="Last modified date, e.g. 2026-11-09.")
+    art.add_argument("--image", help="Featured image URL.")
+    art.add_argument("--url", help="Article page URL.")
+    art.add_argument("--publisher", help="Publisher organization name.")
+
     return parser.parse_args(argv)
 
 
@@ -210,6 +247,7 @@ def main(argv=None):
         "faqpage": build_faqpage,
         "product": build_product,
         "breadcrumbs": build_breadcrumbs,
+        "article": build_article,
     }
     schema = builders[args.command](args)
     output_json_ld(schema, wrap_script=args.script)

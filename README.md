@@ -1,12 +1,13 @@
 # Schema Markup Generator
 
 A simple Python CLI that generates copy-paste ready **JSON-LD** schema markup
-for four common page types:
+for five common page types:
 
 - **LocalBusiness** (name, address, phone, hours, URL)
 - **FAQPage** (question/answer pairs)
 - **Product** (name, price, currency, availability)
 - **BreadcrumbList** (page trail)
+- **Article** (headline, author, dates, image, publisher; types Article, BlogPosting, NewsArticle)
 
 Uses only the Python standard library. No dependencies, no API keys, no build step.
 
@@ -28,6 +29,10 @@ python generate_schema.py product --name "Ergonomic Office Chair" \
 python generate_schema.py breadcrumbs \
   --crumb "Home|https://demo.example.com/" \
   --crumb "Services|https://demo.example.com/services"
+
+python generate_schema.py article --type BlogPosting \
+  --headline "Local SEO Checklist for 2026" --author "Jane Smith" \
+  --date-published "2026-11-09" --url "https://demo.example.com/blog/local-seo-checklist"
 ```
 
 Add `--script` to any command to wrap the output in a ready-to-paste
